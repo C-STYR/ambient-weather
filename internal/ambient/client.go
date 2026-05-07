@@ -12,15 +12,15 @@ type Client struct {
 }
 
 type Record struct {
-	DateUTC      int64   `json:"dateutc"`
-	TempF        float64 `json:"tempf"`
-	Humidity     float64 `json:"humidity"`
-	WindSpeedMph float64 `json:"windspeedmph"`
-	WindGustMph  float64 `json:"windgustmph"`
-	DailyRainIn  float64 `json:"dailyrainin"`
-	BaromRelIn   float64 `json:"baromrelin"`
-	FeelsLike    float64 `json:"feelsLike"`
-	DewPoint     float64 `json:"dewPoint"`
+	DateUTC      int64   `json:"dateutc"       dynamodbav:"dateutc"`
+	TempF        float64 `json:"tempf"         dynamodbav:"tempf"`
+	Humidity     float64 `json:"humidity"      dynamodbav:"humidity"`
+	WindSpeedMph float64 `json:"windspeedmph"  dynamodbav:"windspeedmph"`
+	WindGustMph  float64 `json:"windgustmph"   dynamodbav:"windgustmph"`
+	DailyRainIn  float64 `json:"dailyrainin"   dynamodbav:"dailyrainin"`
+	BaromRelIn   float64 `json:"baromrelin"    dynamodbav:"baromrelin"`
+	FeelsLike    float64 `json:"feelsLike"     dynamodbav:"feelsLike"`
+	DewPoint     float64 `json:"dewPoint"      dynamodbav:"dewPoint"`
 }
 
 func (c *Client) FetchPage(macAddress string, endDate int64, limit int) ([]Record, error) {
