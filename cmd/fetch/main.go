@@ -52,7 +52,10 @@ func main() {
 		}
 		fmt.Printf("fetched %d records", recordCount)
 
-		err = store.WriteRecords(envConfig.stationName, results)
+		// for single writes only
+		// err = store.WriteRecords(envConfig.stationName, results)
+		
+		err = store.ProcessRecords(envConfig.stationName, 25, results)
 		if err != nil {
 			fmt.Println("error writing records:", err)
 			return
