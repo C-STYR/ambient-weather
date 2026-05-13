@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/cstyr/weather/internal/ambient"
@@ -20,6 +21,7 @@ func main() {
 	client := &ambient.Client{
 		APIKey: envConfig.ApiKey,
 		AppKey: envConfig.AppKey,
+		HttpClient: &http.Client{},
 	}
 
 	store, err := store.New(envConfig.Region, envConfig.TableName)

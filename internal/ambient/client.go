@@ -6,18 +6,27 @@ import (
 	"net/http"
 )
 
+type HTTPClient interface {
+	Get(url string) (*http.Response, error)
+}
+
 type Client struct {
-	APIKey string
-	AppKey string
+	APIKey     string
+	AppKey     string
+	HttpClient HTTPClient
 }
 
 type Record struct {
 	DateUTC      int64   `json:"dateutc"       dynamodbav:"dateutc"`
+	Date         string  `json:"date"       dynamodbav:"date"`
 	TempF        float64 `json:"tempf"         dynamodbav:"tempf"`
 	Humidity     float64 `json:"humidity"      dynamodbav:"humidity"`
 	WindSpeedMph float64 `json:"windspeedmph"  dynamodbav:"windspeedmph"`
 	WindGustMph  float64 `json:"windgustmph"   dynamodbav:"windgustmph"`
+	MaxDailyGust float64 `json:"maxdailygust" dynamodbav:"maxdailygust"`
+	WindDir      float64 `json:"winddir"   dynamodbav:"winddir"`
 	DailyRainIn  float64 `json:"dailyrainin"   dynamodbav:"dailyrainin"`
+	LastRain     string  `json:"lastRain"   dynamodbav:"lastRain"`
 	BaromRelIn   float64 `json:"baromrelin"    dynamodbav:"baromrelin"`
 	FeelsLike    float64 `json:"feelsLike"     dynamodbav:"feelsLike"`
 	DewPoint     float64 `json:"dewPoint"      dynamodbav:"dewPoint"`
@@ -37,7 +46,7 @@ func (c *Client) FetchPage(macAddress string, endDate int64, limit int) ([]Recor
 		url += fmt.Sprintf("&endDate=%d", endDate)
 	}
 
-	resp, err := http.Get(url)
+	resp, err := c.HttpClient.Get(url)
 	if err != nil {
 		return nil, err
 	}

@@ -11,8 +11,13 @@ import (
 	"github.com/cstyr/weather/internal/ambient"
 )
 
+type DynamoDBClient interface {
+    BatchWriteItem(ctx context.Context, params *dynamodb.BatchWriteItemInput, optFns ...func(*dynamodb.Options)) (*dynamodb.BatchWriteItemOutput, error)
+}
+
+
 type Store struct {
-	client    *dynamodb.Client
+	client    DynamoDBClient
 	tableName string
 }
 
