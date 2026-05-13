@@ -37,14 +37,13 @@ func (c *Client) FetchPage(macAddress string, endDate int64, limit int) ([]Recor
 		url += fmt.Sprintf("&endDate=%d", endDate)
 	}
 
-	// make a get request using net/http
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
 
-	// handle error from API
+	// handle error from Ambient Weather API
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("API returned status %d", resp.StatusCode)
 	}
@@ -55,6 +54,5 @@ func (c *Client) FetchPage(macAddress string, endDate int64, limit int) ([]Recor
 		return nil, err
 	}
 
-	// return the slice and error
 	return records, nil
 }

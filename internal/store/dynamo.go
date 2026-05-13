@@ -38,9 +38,12 @@ func (s *Store) ProcessRecords(station string, chunkSize int, records []ambient.
 	for i := 0; i < len(records); i += chunkSize {
 		chunk := records[i:min(i+chunkSize, len(records))]
 		wg.Add(1)
+
+		// write each batch concurrently
 		go func() {
 			defer wg.Done()
 			err := s.BatchWriteRecords(station, chunk)
+			// send nil if no error
 			if err != nil {
 				errs <- err
 			} else {
@@ -48,13 +51,14 @@ func (s *Store) ProcessRecords(station string, chunkSize int, records []ambient.
 			}
 		}()
 	}
-	wg.Wait()
 
+	wg.Wait()
 	close(errs)
 
-	for v := range errs {
-		if v != nil {
-			return v
+	// check for errors from goroutines
+	for e := range errs {
+		if e != nil {
+			return e
 		}
 	}
 
@@ -88,32 +92,6 @@ func (s *Store) BatchWriteRecords(station string, records []ambient.Record) erro
 
 	if err != nil {
 		return err
-	}
-
-	return nil
-}
-
-// unused - part of prototyping, do not delete
-func (s *Store) WriteRecords(station string, records []ambient.Record) error {
-
-	for _, r := range records {
-		// convert the struct to the ddb format
-		item, err := attributevalue.MarshalMap(r)
-		if err != nil {
-			return err
-		}
-
-		// add the station value
-		item["station"] = &types.AttributeValueMemberS{Value: station}
-
-		// add to the table
-		_, err = s.client.PutItem(context.TODO(), &dynamodb.PutItemInput{
-			TableName: &s.tableName,
-			Item:      item,
-		})
-		if err != nil {
-			return err
-		}
 	}
 
 	return nil
